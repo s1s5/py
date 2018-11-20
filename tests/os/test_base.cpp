@@ -7,15 +7,15 @@
  */
 #include "../cpput.hpp"
 
-#include "py/builtins/base.hpp"
+#include "py/os/base.hpp"
 
 namespace {
 
 using namespace py;
 
-TEST(py_os_base_in, 000) {
-    ASSERT_TRUE(false);
-}
+// TEST(py_os_base_in, 000) {
+//     ASSERT_TRUE(false);
+// }
 
 }  // namespace
 
