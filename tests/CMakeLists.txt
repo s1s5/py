@@ -4,13 +4,14 @@ set(CPPUT_LIBS dl)
 macro(py_add_test module_name)
   set(list_var "${ARGN}")
   foreach(test_filename IN LISTS list_var)
-    add_executable(${module_name}_${test_filename} test_${test_filename}.cpp ${CPPUT_MAIN})
-    target_link_libraries(${module_name}_${test_filename} ${CPPUT_LIBS})
+    add_executable(test_${module_name}_${test_filename} test_${test_filename}.cpp ${CPPUT_MAIN})
+    target_link_libraries(test_${module_name}_${test_filename} ${CPPUT_LIBS})
     add_test(
-      NAME ${module_name}_${test_filename}
-      COMMAND ${module_name}_${test_filename})
+      NAME test_${module_name}_${test_filename}
+      COMMAND test_${module_name}_${test_filename})
   endforeach()
 endmacro()
 
 add_subdirectory(builtins)
+add_subdirectory(os)
 

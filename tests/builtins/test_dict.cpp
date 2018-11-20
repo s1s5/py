@@ -1,5 +1,5 @@
 /**
- * Copyright 2015- Co. Ltd. sizebook
+ * Copyright
  * @file test_dict.cpp
  * @brief
  * @author Shogo Sawai
