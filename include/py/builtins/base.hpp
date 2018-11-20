@@ -13,6 +13,23 @@
 
 namespace py {
 
+namespace internal {
+template <typename T>
+class has_operator_size {
+    typedef char one;
+    typedef long two;
+
+    template <typename C>
+    static one test(decltype(&C::size));
+    template <typename C>
+    static two test(...);
+
+ public:
+    enum { value = sizeof(test<T>(0)) == sizeof(char) };
+};
+
+}  // internal
+
 // not recommended in c++17
 template <class IteratorType>
 class Iterable : public std::iterator<std::input_iterator_tag,
@@ -36,6 +53,10 @@ bool in(const E &e, const V &v) {
     return false;
 }
 
+template<class T>
+typename std::enable_if<internal::has_operator_size<T>::value, size_t>::type len(const T& t) {
+    return t.size();
+}
 
 }  // namespace py
 

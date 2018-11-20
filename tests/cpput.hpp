@@ -232,7 +232,9 @@ struct Result {
     }
 
     template <typename T, typename U>
-    typename std::enable_if<has_operator_rrshift<T>::value and has_operator_rrshift<T>::value, void>::type
+    typename std::enable_if<
+        (std::is_fundamental<T>::value and std::is_fundamental<U>::value) or
+        (has_operator_rrshift<T>::value and has_operator_rrshift<U>::value), void>::type
     addFailure(const char* filename, std::size_t line, T expected, U actual) {
         pass_ = false;
         std::stringstream ss;
@@ -241,7 +243,9 @@ struct Result {
     }
 
     template <typename T, typename U>
-    typename std::enable_if<not (has_operator_rrshift<T>::value and has_operator_rrshift<T>::value), void>::type
+    typename std::enable_if<not (
+        (std::is_fundamental<T>::value and std::is_fundamental<U>::value) or
+        (has_operator_rrshift<T>::value and has_operator_rrshift<U>::value)), void>::type
     addFailure(const char* filename, std::size_t line, T expected, U actual) {
         pass_ = false;
         std::stringstream ss;

@@ -13,8 +13,115 @@ namespace {
 
 using namespace py;
 
-TEST(py_builtins_zip, 000) {
-    ASSERT_TRUE(false);
+TEST(py_builtins_zip, clcl) {
+    std::vector<int> v0_{0, 1, 2, 3, 4};
+    std::vector<double> v1_{0.0, 0.1, 0.2, 0.3, 0.4};
+    const std::vector<int> &v0 = v0_;
+    const std::vector<double> &v1 = v1_;
+    int i = 0;
+    for (auto &&[a, b] : zip(v0, v1)) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+    }
+}
+
+TEST(py_builtins_zip, rcl) {
+    std::vector<int> v0_{0, 1, 2, 3, 4};
+    std::vector<double> v1_{0.0, 0.1, 0.2, 0.3, 0.4};
+    const std::vector<double> &v1 = v1_;
+    int i = 0;
+    for (auto &&[a, b] : zip(std::move(v0_), v1)) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+    }
+}
+
+TEST(py_builtins_zip, clr) {
+    std::vector<int> v0_{0, 1, 2, 3, 4};
+    std::vector<double> v1_{0.0, 0.1, 0.2, 0.3, 0.4};
+    const std::vector<int> &v0 = v0_;
+    int i = 0;
+    for (auto &&[a, b] : zip(v0, std::move(v1_))) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+    }
+}
+
+TEST(py_builtins_zip, rr) {
+    std::vector<int> v0_{0, 1, 2, 3, 4};
+    std::vector<double> v1_{0.0, 0.1, 0.2, 0.3, 0.4};
+    int i = 0;
+    for (auto &&[a, b] : zip(std::move(v0_), std::move(v1_))) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+    }
+}
+
+TEST(py_builtins_zip, ll) {
+    std::vector<int> v0{0, 1, 2, 3, 4};
+    std::vector<double> v1{0.0, 0.1, 0.2, 0.3, 0.4};
+    int i = 0;
+    for (auto &&[a, b] : zip(v0, v1)) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+        a *= 2;
+        b *= 2;
+    }
+    for (i = 0; i < 5; i++) {
+        ASSERT_EQ(v0[i], 2 * i);
+        ASSERT_NEAR(v1[i], 0.1 * 2 * i, 1.0e-8);
+    }
+}
+
+TEST(py_builtins_zip, rl) {
+    std::vector<int> v0{0, 1, 2, 3, 4};
+    std::vector<double> v1{0.0, 0.1, 0.2, 0.3, 0.4};
+    int i = 0;
+    for (auto &&[a, b] : zip(std::move(v0), v1)) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+        a *= 2;
+        b *= 2;
+    }
+    for (i = 0; i < 5; i++) {
+        ASSERT_EQ(v0[i], i);  // not overwrite
+        ASSERT_NEAR(v1[i], 0.1 * 2 * i, 1.0e-8);
+    }
+}
+
+TEST(py_builtins_zip, lr) {
+    std::vector<int> v0{0, 1, 2, 3, 4};
+    std::vector<double> v1{0.0, 0.1, 0.2, 0.3, 0.4};
+    int i = 0;
+    for (auto &&[a, b] : zip(v0, std::move(v1))) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+        a *= 2;
+        b *= 2;
+    }
+    for (i = 0; i < 5; i++) {
+        ASSERT_EQ(v0[i], 2 * i);
+        ASSERT_NEAR(v1[i], 0.1 * i, 1.0e-8); // not overwrite
+    }
+}
+
+TEST(py_builtins_zip, different_size) {
+    std::vector<int> v0{0, 1, 2, 3, 4, 5, 6, 7};
+    std::vector<double> v1{0.0, 0.1, 0.2, 0.3, 0.4};
+    int i = 0;
+    for (auto &&[a, b] : zip(v0, v1)) {
+        ASSERT_EQ(a, i);
+        ASSERT_NEAR(b, 0.1 * i, 1.0e-8);
+        i++;
+    }
+    ASSERT_EQ(i, 5);
 }
 
 }  // namespace

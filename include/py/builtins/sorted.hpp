@@ -8,8 +8,8 @@
 #ifndef SORTED_HPP_
 #define SORTED_HPP_
 
-#include <vector>
 #include <algorithm>
+#include "list.hpp"
 
 namespace py {
 
