@@ -1,6 +1,14 @@
 
-add_executable(builtins_enumerate test_enumerate.cpp ${CPPUT_MAIN})
-target_link_libraries(builtins_enumerate ${CPPUT_LIBS})
+py_add_test(builtins
+  base
+  dict
+  enumerate
+  filter
+  list
+  map
+  range
+  reduce
+  sorted
+  str
+  zip)
 
-add_test(NAME builtins_enumerate
-  COMMAND builtins_enumerate)
