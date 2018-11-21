@@ -13,6 +13,16 @@
 
 namespace py::random {
 
+namespace internal {
+class RandomGenerator {
+ public:
+    static std::mt19937 &get() {
+        static std::mt19937 mt{0};
+        return mt;
+    }
+};
+}  // namespace internal
+
 // [0.0, 1.0)
 template <class G>
 double random(G &g) {
@@ -22,10 +32,7 @@ double random(G &g) {
 // minv <= N <= maxv
 template <class G>
 double uniform(G &g, double minv, double maxv) {
-    std::uniform_real_distribution<double> r(minv, maxv + 1.0e-16);
-    double value = r(g);
-    while (value < minv || value > maxv) { value = r(g); }
-    return value;
+    return std::uniform_real_distribution<double>(minv,  std::nextafter(maxv, std::numeric_limits<double>::max()))(g);
 }
 
 // return gaussian distribution
@@ -41,16 +48,24 @@ int randint(G &g, int minv, int maxv) {
     return std::uniform_int_distribution<>(minv, maxv)(g);
 }
 
-template <class V>
-auto choice(V &v) -> decltype(*(std::declval<V>().begin())) {
+template <class G, class V>
+auto choice(G &g, V &v) -> decltype(*(std::declval<V>().begin())) {
     if (v.empty()) { throw std::invalid_argument("py::random::choice() list is empty"); }
-    return v[randint(0, v.size() - 1)];
+    return v[randint(g, 0, v.size() - 1)];
 }
-template <class V>
-auto choice(const V &v) -> decltype(*(std::declval<V>().cbegin())) {
+template <class G, class V>
+auto choice(G &g, const V &v) -> decltype(*(std::declval<V>().cbegin())) {
     if (v.empty()) { throw std::invalid_argument("py::random::choice() list is empty"); }
-    return v[randint(0, v.size() - 1)];
+    return v[randint(g, 0, v.size() - 1)];
 }
+
+inline void seed(uint32_t seed) { internal::RandomGenerator::get().seed(seed); }
+inline double random() { return random(internal::RandomGenerator::get()); }
+inline double uniform(double minv, double maxv) { return uniform(internal::RandomGenerator::get(), minv, maxv); }
+inline double gauss(double myu, double sigma) { return gauss(internal::RandomGenerator::get(), myu, sigma); }
+inline int randint(int minv, int maxv) { return randint(internal::RandomGenerator::get(), minv, maxv); }
+template <class V> auto choice(V &v) { return choice(internal::RandomGenerator::get(), v); }
+template <class V> auto choice(const V &v) { return choice(internal::RandomGenerator::get(), v); }
 
 }  // namespace py::random
 
