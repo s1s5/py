@@ -59,7 +59,7 @@
 - [ ] slice()
 - [x] sorted()
 - [ ] staticmethod()
-- [ ] str()
+- [x] str()
 - [ ] sum()
 - [ ] super()
 - [ ] tuple()
