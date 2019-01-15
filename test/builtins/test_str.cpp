@@ -13,6 +13,10 @@ namespace {
 
 using namespace py;
 
+TEST(py_builtins_str, str) {
+    ASSERT_EQ(std::string("3"), str(3));
+}
+
 TEST(py_builtins_str, startswith) {
 #define CHECK_(b, s, x) ASSERT_EQ(b, startswith(s, x))
     CHECK_(true, "hello", "he");
