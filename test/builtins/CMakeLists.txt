@@ -10,5 +10,6 @@ py_add_test(builtins
   reduce
   sorted
   str
-  zip)
+  zip
+  reversed)
 

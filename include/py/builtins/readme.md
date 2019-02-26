@@ -52,7 +52,7 @@
 - [ ] property()
 - [x] range()
 - [ ] repr()
-- [ ] reversed()
+- [x] reversed()
 - [ ] round()  
 - [ ] set()
 - [ ] setattr()
