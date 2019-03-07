@@ -16,6 +16,7 @@
 #include "map.hpp"
 #include "range.hpp"
 #include "reduce.hpp"
+#include "reversed.hpp"
 #include "sorted.hpp"
 #include "str.hpp"
 #include "zip.hpp"
