@@ -67,3 +67,8 @@
 - [ ] vars()
 - [x] zip()
 - [ ] __import__()
+
+# other
+- [ ] keys(map)
+- [ ] values(map)
+
