@@ -11,5 +11,6 @@ py_add_test(builtins
   sorted
   str
   zip
-  reversed)
+  reversed
+  combined)
 

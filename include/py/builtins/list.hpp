@@ -13,8 +13,8 @@
 namespace py {
 
 template <class Tarray>
-std::vector<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type> list(const Tarray &iterable) {
-    using el = typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type;
+auto list(const Tarray &iterable) {
+    using el = typename std::remove_cv<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type>::type;
     std::vector<el> dst;
     for (auto &&iter : iterable) {
         dst.emplace_back(iter);
@@ -23,8 +23,8 @@ std::vector<typename std::remove_reference<decltype((*((std::declval<Tarray>().b
 }
 
 template <class Tarray>
-std::vector<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type> list(Tarray &&iterable) {
-    using el = typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type;
+auto list(Tarray &&iterable) {
+    using el = typename std::remove_cv<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type>::type;
     std::vector<el> dst;
     for (auto &&iter : iterable) {
         dst.emplace_back(iter);

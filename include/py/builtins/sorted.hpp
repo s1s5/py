@@ -14,16 +14,16 @@
 namespace py {
 
 template <class Tarray>
-std::vector<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type> sorted(const Tarray &iterable) {
-    using el = typename std::remove_reference<decltype(*((std::declval<Tarray>().begin())))>::type;
+auto sorted(const Tarray &iterable) {
+    using el = typename std::remove_cv<typename std::remove_reference<decltype(*((std::declval<Tarray>().begin())))>::type>::type;
     std::vector<el> dst = list(iterable);
     std::sort(dst.begin(), dst.end());
     return dst;
 }
 
 template <class Tarray>
-std::vector<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type> sorted(Tarray &&iterable) {
-    using el = typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type;
+auto sorted(Tarray &&iterable) {
+    using el = typename std::remove_cv<typename std::remove_reference<decltype((*((std::declval<Tarray>().begin()))))>::type>::type;
     std::vector<el> dst = list(iterable);
     std::sort(dst.begin(), dst.end());
     return dst;
