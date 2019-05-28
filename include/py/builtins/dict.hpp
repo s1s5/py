@@ -86,7 +86,7 @@ class keys_list {
 
 template<class T>
 auto keys(T &t) {
-    return keys_list(t);
+    return keys_list<T>(t);
 }
 
 template<typename Iter>
@@ -130,7 +130,7 @@ class values_list {
 
 template<class T>
 auto values(T &t) {
-    return values_list(t);
+    return values_list<T>(t);
 }
 
 }  // namespace py
