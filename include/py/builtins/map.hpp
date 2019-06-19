@@ -34,11 +34,12 @@ class imap_iterator {
 template <class TFunc, class TupleType>
 class imap {
  public:
-    imap(TFunc func_, TupleType &&args_) : func(func_), args(args_) {}
+    imap(TFunc &&func_, TupleType &&args_) : func(func_), args(args_) {}
     auto begin() {
         auto iters = internal::tuple_begin(args);
         return imap_iterator<TFunc, decltype(iters)>(func, std::move(iters));
     }
+
     auto end() {
         auto iters = internal::tuple_end(args);
         return imap_iterator<TFunc, decltype(iters)>(func, std::move(iters));
@@ -52,7 +53,7 @@ class imap {
 template <class TFunc, class ...Args>
 auto map(TFunc &&func_, Args &&... args) {
     auto t = std::tuple_cat(internal::tuple_intelligent_forward<Args>(args)...);
-    return imap<TFunc, decltype(t)>(func_, std::move(t));
+    return imap<TFunc, decltype(t)>(std::forward<TFunc>(func_), std::move(t));
 }
 
 }  // namespace py

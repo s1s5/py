@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "py/builtins/map.hpp"
+#include "../debug.hpp"
 
 namespace {
 
@@ -62,13 +63,27 @@ TEST(py_builtins_map, rvalue_function_rvalue_reference) {
 }
 
 TEST(py_builtins_map, rvalue_function_const_lvalue_reference) {
-   const std::vector<int> v0{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
-   auto iv = py::map([](auto e) { return e + 10; }, v0);
-   int i = 0;
-   for (auto &&j : iv) {
-       ASSERT_EQ(i + 10, j);
-       i++;
-   }
+    const std::vector<int> v0{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
+    auto iv = py::map([](auto e) { return e + 10; }, v0);
+    int i = 0;
+    for (auto &&j : iv) {
+        ASSERT_EQ(i + 10, j);
+        i++;
+    }
+}
+
+TEST(py_builtins_map, debug) {
+    Class x;
+    const std::vector<int> v0{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
+    int i = 0;
+    for (auto &&j : py::map(x, v0)) {
+        std::cout << i << " : " << j << std::endl;
+        i++;
+    }
+    for (auto &&j : py::map(Class(), v0)) {
+        std::cout << i << " : " << j << std::endl;
+        i++;
+    }
 }
 
 //TEST(py_builtins_map, iterator) {
