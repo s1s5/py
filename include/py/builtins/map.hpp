@@ -30,7 +30,7 @@ class imap_iterator {
         internal::tuple_pincrement(iter);
         return *this;
     }
-    auto operator*() const { return internal::tuple_apply(func, iter); }
+    auto operator*() const { return internal::tuple_apply_iterators(func, iter); }
     // auto operator->() const { return (*func)(*iter); }
     bool operator==(const imap_iterator &rhs) const { return internal::tuple_equal_or(iter, rhs.iter); }
     bool operator!=(const imap_iterator &rhs) const { return not internal::tuple_equal_or(iter, rhs.iter); }

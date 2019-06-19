@@ -14,13 +14,13 @@
 namespace py {
 
 template <class Tarray>
-izip_rl<range, Tarray> enumerate(Tarray &ar) {  // NOLINT
-    return izip_rl<range, Tarray>(range(1 << 30), ar);
+auto enumerate(Tarray &ar, int start_index = 0) {  // NOLINT
+    return zip(range(start_index, 1 << 30), ar);
 }
 
 template <class Tarray>
-izip_rr<range, Tarray> enumerate(Tarray &&ar) {  // NOLINT
-    return izip_rr<range, Tarray>(range(1 << 30), std::move(ar));
+auto enumerate(Tarray &&ar, int start_index = 0) {  // NOLINT
+    return zip(range(start_index, 1 << 30), std::move(ar));
 }
 
 }  // namespace py

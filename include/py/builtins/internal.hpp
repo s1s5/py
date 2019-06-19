@@ -15,8 +15,12 @@ namespace py::internal {
 template <int N>
 struct TupleUtil {
     template <typename F, typename Tuple, typename... Args>
-    static auto apply(F &f, Tuple& t, Args&... args) {
-        return TupleUtil<N - 1>::apply(f, t, std::get<N - 1>(t), args...);
+    static auto apply_iterators(F &f, Tuple& t, Args&... args) {
+        return TupleUtil<N - 1>::apply_iterators(f, t, std::get<N - 1>(t), args...);
+    }
+    template <typename Tuple, typename... Args>
+    static auto deref(Tuple& t, Args&... args) {
+        return TupleUtil<N - 1>::deref(t, std::get<N - 1>(t), args...);
     }
     template <typename Tuple, typename... Args>
     static auto begin(Tuple& t, Args&... args) {
@@ -42,8 +46,13 @@ struct TupleUtil {
 template <>
 struct TupleUtil<0> {
     template <typename F, typename Tuple, typename... Args>
-    static auto apply(F &f, Tuple & t, Args&... args) {
+    static auto apply_iterators(F &f, Tuple & t, Args&... args) {
         return f(*args...);
+    }
+
+    template <typename Tuple, typename... Args>
+    static auto deref(Tuple& t, Args&... args) {
+        return std::make_tuple(*args...);
     }
 
     template <typename Tuple, typename... Args>
@@ -67,8 +76,13 @@ struct TupleUtil<0> {
 };
 
 template <typename F, typename Tuple>
-auto tuple_apply(F &f, Tuple& t) {
-    return TupleUtil<std::tuple_size<Tuple>::value>::apply(f, t);
+auto tuple_apply_iterators(F &f, Tuple& t) {
+    return TupleUtil<std::tuple_size<Tuple>::value>::apply_iterators(f, t);
+}
+
+template <typename Tuple>
+auto tuple_deref(Tuple& t) {
+    return TupleUtil<std::tuple_size<Tuple>::value>::deref(t);
 }
 
 template <typename Tuple>

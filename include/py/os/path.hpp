@@ -208,9 +208,9 @@ inline std::string relpath(const std::string &path, const std::string &base_ = "
     auto start_list = ::py::list(::py::filter([](auto v) { return v.size(); }, ::py::split(path::abspath(base), "/")));
     auto path_list = ::py::list(::py::filter([](auto v) { return v.size(); }, ::py::split(path::abspath(path), "/")));
     int common_prefix = 0;
-    for (auto &&i : ::py::zip(start_list, path_list)) {
+    for (auto &&[i0, i1] : ::py::zip(start_list, path_list)) {
         // std::cout << *i.first << " - " << *i.second << std::endl;
-        if (i.first != i.second) {
+        if (i0 != i1) {
             break;
         }
         common_prefix++;
