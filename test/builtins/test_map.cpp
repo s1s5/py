@@ -14,6 +14,10 @@
 
 namespace {
 
+int add(int a, int b) {
+    return a + b;
+}
+
 TEST(py_builtins_map, rvalue_function_lvalue_reference) {
     std::vector<int> v0{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
     auto iv = py::map([](auto e) { return e + 10; }, v0);
@@ -72,6 +76,13 @@ TEST(py_builtins_map, rvalue_function_const_lvalue_reference) {
     }
 }
 
+TEST(py_builtins_map, multi) {
+    for (auto &&r : py::map(add,
+                           std::vector<int>{0, 1, 2, 3},
+                           std::vector<int>{4, 5, 6, 7})) {
+        std::cout << r << std::endl;
+    }
+}
 TEST(py_builtins_map, debug) {
     Class x;
     const std::vector<int> v0{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
