@@ -119,5 +119,20 @@ TEST(py_builtins_zip, different_size) {
     ASSERT_EQ(i, 5);
 }
 
+TEST(py_builtins_zip, multiple_args) {
+    int i = 0;
+    for (auto &&[a, b, c, d] : zip(std::vector<int>{0, 1, 2, 3},
+                                   std::vector<int>{1, 2, 3, 4},
+                                   std::vector<int>{2, 3, 4, 5},
+                                   std::vector<int>{3, 4, 5, 6})) {
+        ASSERT_EQ(i + 0, a);
+        ASSERT_EQ(i + 1, b);
+        ASSERT_EQ(i + 2, c);
+        ASSERT_EQ(i + 3, d);
+        i++;
+    }
+    ASSERT_EQ(i, 4);
+}
+
 }  // namespace
 
