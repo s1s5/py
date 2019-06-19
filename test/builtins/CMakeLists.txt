@@ -1,6 +1,7 @@
 
 py_add_test(builtins
   base
+  internal
   dict
   enumerate
   filter

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015- Co. Ltd. sizebook
+ * Copyright
  * @file debug.hpp
  * @brief
  * @author Shogo Sawai

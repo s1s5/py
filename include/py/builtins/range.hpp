@@ -29,7 +29,7 @@ class range {
             _cur += _step;
             return *this;
         }
-        int operator*() const { return _cur; }
+        const int &operator*() const { return _cur; }
         const int *operator->() const { return &_cur; }
         bool operator==(const Iterator &rhs) const { return _cur == rhs._cur; }
         bool operator!=(const Iterator &rhs) const { return !((*this) == rhs); }

@@ -41,6 +41,16 @@ struct TupleUtil {
         return (std::get<N - 1>(lhs) == std::get<N - 1>(rhs)) or
             TupleUtil<N - 1>::tuple_equal_or(lhs, rhs);
     }
+
+    // template<typename Tuple, typename ... Args>
+    // static auto intelligent_clone(Tuple &t, Args ... args) {
+    //     using type = decltype(std::get<N - 1>(t));
+    //     if constexpr (std::is_rvalue_reference<type>::value) {
+    //         return TupleUtil<N - 1>::intelligent_clone(t, (typename std::remove_reference<type>::type)std::get<N - 1>(t), args...);
+    //     } else {
+    //         return TupleUtil<N - 1>::intelligent_clone(t, std::get<N - 1>(t), args...);
+    //     }
+    // }
 };
 
 template <>
@@ -52,12 +62,12 @@ struct TupleUtil<0> {
 
     template <typename Tuple, typename... Args>
     static auto deref(Tuple& t, Args&... args) {
-        return std::make_tuple(*args...);
+        return std::tie(*args...);  // create reference
     }
 
     template <typename Tuple, typename... Args>
     static auto begin(Tuple& t, Args&... args) {
-        return std::make_tuple(args.begin()...);
+        return std::make_tuple(args.begin()...);  // create copy
     }
 
     template <typename Tuple, typename... Args>
@@ -73,6 +83,11 @@ struct TupleUtil<0> {
     static bool tuple_equal_or(Tuple& lhs, Tuple& rhs) {
         return false;
     }
+
+    // template<typename Tuple, typename ... Args>
+    // static auto intelligent_clone(Tuple &t, Args ... args) {
+    //     return std::make_tuple(args...);
+    // }
 };
 
 template <typename F, typename Tuple>
@@ -105,6 +120,56 @@ auto tuple_equal_or(Tuple& lhs, Tuple& rhs) {
     return TupleUtil<std::tuple_size<Tuple>::value>::tuple_equal_or(lhs, rhs);
 }
 
+// template <typename Tuple>
+// auto tuple_intelligent_clone(Tuple& t) {
+//     return TupleUtil<std::tuple_size<Tuple>::value>::intelligent_clone(t);
+// }
+#if 0
+template <typename Arg>
+auto tuple_intelligent_clone(Arg &arg) {
+    return std::tie(arg);
+}
+
+template <typename Arg>
+auto tuple_intelligent_clone(Arg &&arg) {
+    return std::make_tuple(arg);
+}
+
+template <typename Arg, typename ...Args>
+auto tuple_intelligent_clone(Arg &&arg, Args&&...args) {
+    return std::tuple_cat(std::make_tuple(arg), tuple_intelligent_clone(std::forward<Args>(args)...));
+}
+
+template <typename Arg, typename ...Args>
+auto tuple_intelligent_clone(Arg &arg, Args&&...args) {
+    return std::tuple_cat(std::tie(arg), tuple_intelligent_clone(std::forward<Args>(args)...));
+}
+#else
+
+template <typename Arg>
+auto tuple_intelligent_forward(Arg &arg) {
+    if constexpr (std::is_lvalue_reference<Arg>::value) {
+        return std::tie(arg);
+    } else {
+        return std::make_tuple(arg);
+    }
+    // std::cout << "lvalue reference " << arg.size() << ", " << std::is_rvalue_reference<Arg>::value << ", " << std::is_lvalue_reference<Arg>::value << std::endl;
+    // return arg;
+}
+
+// template <typename Arg>
+// auto tuple_intelligent_forward(Arg &&arg) {
+//     std::cout << "rvalue reference " << arg.size() << std::endl;
+//     return (typename std::remove_reference<Arg>::type)arg;
+//     // return arg;
+// }
+
+template <typename ...Args>
+auto tuple_intelligent_clone(Args&&...args) {
+    // return std::tie(tuple_intelligent_forward<Args>(args)...);
+    return std::tuple_cat(tuple_intelligent_forward<Args>(args)...);
+}
+#endif
 
 }  // namespace py::internal
 

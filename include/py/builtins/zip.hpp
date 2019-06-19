@@ -32,48 +32,29 @@ class izip_iterator {
     TupleType iter;
 };
 
-template <class ...Tarrays>
-class izip_l {
+template <class TupleType>
+class izip {
  public:
-    izip_l(Tarrays&...arrays_) : arrays(std::forward_as_tuple(arrays_...)) {}
+    izip(TupleType &&t_) : t(t_) {}
     auto begin() {
-        auto iters = internal::tuple_begin(arrays);
+        auto iters = internal::tuple_begin(t);
         return izip_iterator<decltype(iters)>(std::move(iters));
     }
     auto end() {
-        auto iters = internal::tuple_end(arrays);
+        auto iters = internal::tuple_end(t);
         return izip_iterator<decltype(iters)>(std::move(iters));
     }
 
  private:
-    std::tuple<Tarrays&...> arrays;
+    TupleType t;
 };
 
-template <class ...Tarrays>
-class izip_r {
- public:
-    izip_r(Tarrays&&...arrays_) : arrays(std::forward_as_tuple(arrays_...)) {}
-    auto begin() {
-        auto iters = internal::tuple_begin(arrays);
-        return izip_iterator<decltype(iters)>(std::move(iters));
-    }
-    auto end() {
-        auto iters = internal::tuple_end(arrays);
-        return izip_iterator<decltype(iters)>(std::move(iters));
-    }
-
- private:
-    std::tuple<Tarrays...> arrays;
-};
-
-template<class ...Tarrays>
-auto zip(Tarrays & ... arrays) {
-    return izip_l<Tarrays...>(arrays...);
-}
-
-template<class ...Tarrays>
-auto zip(Tarrays && ... arrays) {
-    return izip_l<Tarrays...>(arrays...);
+template<typename ...Args>
+auto zip(Args&&... args) {
+    auto t = std::tuple_cat(internal::tuple_intelligent_forward<Args>(args)...);
+    // auto t = std::tie(internal::tuple_intelligent_forward<Args>(args)...);
+    // auto t = internal::tuple_intelligent_clone(args...);
+    return izip<decltype(t)>(std::move(t));
 }
 
 }  // namespace py
