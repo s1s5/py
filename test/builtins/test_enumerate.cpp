@@ -21,7 +21,7 @@ TEST(py_builtins_enumerate, read) {
         ASSERT_EQ(value, values[ref_index]);
         ref_index++;
     }
-    ASSERT_EQ(ref_index, values.size());
+    ASSERT_EQ(ref_index, (int)values.size());
 }
 
 TEST(py_builtins_enumerate, write) {
@@ -30,7 +30,7 @@ TEST(py_builtins_enumerate, write) {
         value = index;
     }
     for (size_t i = 0; i < values.size(); i++) {
-        ASSERT_EQ(i, values[i]);
+        ASSERT_EQ((int)i, values[i]);
     }
 }
 
@@ -43,9 +43,22 @@ TEST(py_builtins_enumerate, const_read) {
         ASSERT_EQ(value, values[ref_index]);
         ref_index++;
     }
-    ASSERT_EQ(ref_index, values.size());
+    ASSERT_EQ(ref_index, (int)values.size());
 }
 
+TEST(py_builtins_enumerate, large) {
+    std::vector<int> values;
+    for (int i = 0; i < 10000; i++) {
+        values.push_back(i);
+    }
+    int ref_index = 0;
+    for (auto &&[index, value] : py::enumerate(values)) {
+        ASSERT_EQ(index, ref_index);
+        ASSERT_EQ(value, values[ref_index]);
+        ref_index++;
+    }
+    ASSERT_EQ(ref_index, (int)values.size());
+}
 
 
 }  // namespace
