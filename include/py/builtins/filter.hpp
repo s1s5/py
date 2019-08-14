@@ -104,11 +104,11 @@ ifilter_rvalue<TFunc, Tarray> filter(TFunc func_, Tarray &&ar) {
     return ifilter_rvalue<TFunc, Tarray>(func_, std::move(ar));
 }
 
-template <class TFunc, class IteratorType>
-Iterable<ifilter_iterator<TFunc, IteratorType>> filter(const TFunc &func_, IteratorType begin_, IteratorType end_) {
-    return Iterable<ifilter_iterator<TFunc, IteratorType>>(ifilter_iterator<TFunc, IteratorType>(func_, begin_, end_),
-                                                           ifilter_iterator<TFunc, IteratorType>(func_, end_, end_));
-}
+// template <class TFunc, class IteratorType>
+// Iterable<ifilter_iterator<TFunc, IteratorType>> filter(const TFunc &func_, IteratorType begin_, IteratorType end_) {
+//     return Iterable<ifilter_iterator<TFunc, IteratorType>>(ifilter_iterator<TFunc, IteratorType>(func_, begin_, end_),
+//                                                            ifilter_iterator<TFunc, IteratorType>(func_, end_, end_));
+// }
 
 }  // namespace py
 
