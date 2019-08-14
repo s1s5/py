@@ -33,6 +33,9 @@ class imap_iterator {
 
 template <class TFunc, class TupleType>
 class imap {
+    using IterType = decltype(internal::tuple_begin(std::declval<TupleType&>()));
+    using ElementType = decltype(internal::tuple_apply_iterators(std::declval<TFunc&>(), std::declval<IterType&>()));
+
  public:
     imap(TFunc &&func_, TupleType &&args_) : func(func_), args(args_) {}
     auto begin() {
@@ -43,6 +46,10 @@ class imap {
     auto end() {
         auto iters = internal::tuple_end(args);
         return imap_iterator<TFunc, decltype(iters)>(func, std::move(iters));
+    }
+
+    operator std::vector<ElementType> () {
+        return std::vector<ElementType>{begin(), end()};
     }
 
  public:
@@ -57,5 +64,12 @@ auto map(TFunc &&func_, Args &&... args) {
 }
 
 }  // namespace py
+
+namespace std {
+template<class TFunc, class TupleType>
+struct iterator_traits<py::imap_iterator<TFunc, TupleType>> {
+    using iterator_category = std::input_iterator_tag;
+};
+} // namespace std
 
 #endif  // MAP_HPP_
