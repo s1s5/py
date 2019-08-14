@@ -8,6 +8,7 @@
 #ifndef ZIP_HPP_
 #define ZIP_HPP_
 
+#include <vector>
 #include <iterator>
 #include <memory>
 
@@ -34,6 +35,11 @@ class izip_iterator {
 
 template <class TupleType>
 class izip {
+    using IterType = decltype(internal::tuple_begin(std::declval<TupleType&>()));
+    using ElementType = decltype(internal::tuple_deref(std::declval<IterType&>()));
+    // TODO: deref tuple
+    // using RRElementType = typename std::remove_reference<ElementType>::type;
+
  public:
     izip(TupleType &&t_) : t(t_) {}
     auto begin() {
@@ -43,6 +49,10 @@ class izip {
     auto end() {
         auto iters = internal::tuple_end(t);
         return izip_iterator<decltype(iters)>(std::move(iters));
+    }
+
+    operator std::vector<ElementType> () {
+        return std::vector<ElementType>{begin(), end()};
     }
 
  private:
@@ -58,5 +68,13 @@ auto zip(Args&&... args) {
 }
 
 }  // namespace py
+
+namespace std {
+template<class TupleType>
+struct iterator_traits<py::izip_iterator<TupleType>> {
+    using iterator_category = std::input_iterator_tag;
+};
+} // namespace std
+
 
 #endif  // ZIP_HPP_

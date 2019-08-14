@@ -7,6 +7,7 @@
  */
 #include "../cpput.hpp"
 
+#include "py/builtins/base.hpp"
 #include "py/builtins/zip.hpp"
 
 namespace {
@@ -132,6 +133,28 @@ TEST(py_builtins_zip, multiple_args) {
         i++;
     }
     ASSERT_EQ(i, 4);
+}
+
+// TODO
+// TEST(py_builtins_zip, implicit_conversion) {
+//     std::vector<int> v0{0, 1, 2, 3, 4};
+//     std::vector<int> v1{0, 1, 2, 3, 4};
+//     std::vector<std::tuple<int, int>> v = zip(v0, v1);
+// }
+
+int sum2(py::Iterator<std::tuple<int&, int &>> iterator) {
+    int sum = 0;
+    for (auto &&[i, j] : iterator) {
+        sum += i * j;
+    }
+    return sum;
+}
+
+TEST(py_builtins_zip, iterator_int) {
+    std::vector<int> v0{1, 2, 3, 4};
+    std::vector<int> v1{5, 6, 7, 8};
+    int s = sum2(zip(v0, v1));
+    ASSERT_EQ(1 * 5 + 2 * 6 + 3 * 7 + 4 * 8, s);
 }
 
 }  // namespace
