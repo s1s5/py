@@ -14,7 +14,7 @@ namespace py {
 
 class range {
  public:
-    class Iterator : public std::iterator<std::input_iterator_tag, int> {
+    class Iterator : public std::iterator<std::input_iterator_tag, int> {  // TODO: obsolete c+17
      private:
         Iterator(int c, int e, int s) : _cur(c), _end(e), _step(s) {}
 
