@@ -23,18 +23,19 @@ class ifilter_iterator
         : func(func_), _iter(iter_), _end(end_) {
         _search_next();
     }
-    ifilter_iterator operator++(int) {
-        ifilter_iterator tmp(func, _iter, _end);
-        if (_iter != _end) {
-            ++_iter;
-        }
-        _search_next();
-        return tmp;
-    }
+    // ifilter_iterator operator++(int) {
+    //     ifilter_iterator tmp(func, _iter, _end);
+    //     if (_iter != _end) {
+    //         ++_iter;
+    //     }
+    //     _search_next();
+    //     return tmp;
+    // }
     ifilter_iterator &operator++() {
         if (_iter != _end) {
             ++_iter;
         }
+        _search_next();
         return *this;
     }
     element_type &operator*() const { return *_iter; }
@@ -44,7 +45,7 @@ class ifilter_iterator
 
  private:
     void _search_next() {
-        while (_iter != _end && (!func(*_iter))) {
+        while (_iter != _end and (not func(*_iter))) {
             ++_iter;
         }
     }
@@ -69,6 +70,11 @@ class ifilter_lvalue {
         return ifilter_iterator<TFunc, array_iterator_type>(func, array.end(), array.end());
     }
 
+    template<typename T>
+    operator std::vector<T> () {
+        return std::vector<T>{begin(), end()};
+    }
+
  public:
     TFunc func;
     Tarray &array;
@@ -87,6 +93,11 @@ class ifilter_rvalue {
     }
     ifilter_iterator<TFunc, array_iterator_type> end() {
         return ifilter_iterator<TFunc, array_iterator_type>(func, array.end(), array.end());
+    }
+
+    template<typename T>
+    operator std::vector<T> () {
+        return std::vector<T>{begin(), end()};
     }
 
  public:

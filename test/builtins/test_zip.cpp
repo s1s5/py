@@ -135,12 +135,22 @@ TEST(py_builtins_zip, multiple_args) {
     ASSERT_EQ(i, 4);
 }
 
-// TODO
-// TEST(py_builtins_zip, implicit_conversion) {
-//     std::vector<int> v0{0, 1, 2, 3, 4};
-//     std::vector<int> v1{0, 1, 2, 3, 4};
-//     std::vector<std::tuple<int, int>> v = zip(v0, v1);
-// }
+TEST(py_builtins_zip, implicit_conversion) {
+    std::vector<int> v0{0, 1, 2, 3, 4};
+    std::vector<int> v1{0, 1, 2, 3, 4};
+    std::vector<std::tuple<int, int>> v2 = zip(v0, v1);
+    ASSERT_EQ(5, v2.size());
+    ASSERT_EQ(0, std::get<0>(v2[0]));
+
+    std::vector<std::tuple<int&, int&>> v3 = zip(v0, v1);
+    ASSERT_EQ(5, v3.size());
+    ASSERT_EQ(0, std::get<0>(v3[0]));
+    std::get<0>(v3[0]) = 8;
+    std::get<1>(v3[0]) = 9;
+
+    ASSERT_EQ(8, v0[0]);
+    ASSERT_EQ(9, v1[0]);
+}
 
 int sum2(py::Iterator<std::tuple<int&, int &>> iterator) {
     int sum = 0;

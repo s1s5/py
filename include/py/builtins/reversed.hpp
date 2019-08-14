@@ -15,14 +15,15 @@ namespace py {
 
 template <typename T>
 struct reversion_wrapper {
-    using IterType = decltype(std::declval<T>().rbegin());
-    using ElementType = decltype(*std::declval<IterType>());
-    using RRElementType = typename std::remove_reference<ElementType>::type;
+    // using IterType = decltype(std::declval<T>().rbegin());
+    // using ElementType = decltype(*std::declval<IterType>());
+    // using RRElementType = typename std::remove_reference<ElementType>::type;
 
     T& iterable;
 
-    operator std::vector<RRElementType> () {
-        return std::vector<RRElementType>{begin(), end()};
+    template<typename X>
+    operator std::vector<X> () {
+        return std::vector<X>{begin(), end()};
     }
 
     auto begin() { return std::rbegin(iterable); }

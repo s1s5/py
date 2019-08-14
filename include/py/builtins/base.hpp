@@ -103,6 +103,11 @@ class Iterator {
 
     auto begin() const { return _begin; }
     auto end() const { return _end; }
+
+    template<typename T>
+    operator std::vector<T> () {
+        return std::vector<T>{begin(), end()};
+    }
     
     IteratorType _begin, _end;
 };

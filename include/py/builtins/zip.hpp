@@ -51,8 +51,9 @@ class izip {
         return izip_iterator<decltype(iters)>(std::move(iters));
     }
 
-    operator std::vector<ElementType> () {
-        return std::vector<ElementType>{begin(), end()};
+    template<typename T>
+    operator std::vector<T> () {
+        return std::vector<T>{begin(), end()};
     }
 
  private:
