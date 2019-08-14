@@ -17,12 +17,12 @@ template <typename T>
 struct reversion_wrapper {
     using IterType = decltype(std::declval<T>().rbegin());
     using ElementType = decltype(*std::declval<IterType>());
-    using RCVElementType = typename std::remove_reference<ElementType>::type;
+    using RRElementType = typename std::remove_reference<ElementType>::type;
 
     T& iterable;
 
-    operator std::vector<RCVElementType> () {
-        return std::vector<RCVElementType>{begin(), end()};
+    operator std::vector<RRElementType> () {
+        return std::vector<RRElementType>{begin(), end()};
     }
 
     auto begin() { return std::rbegin(iterable); }
