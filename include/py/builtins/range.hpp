@@ -79,6 +79,10 @@ class range {
         return _size;
     }
 
+    operator std::vector<int> () {
+        return std::vector<int>{begin(), end()};
+    }
+
  private:
     int _start, _end, _step, _size;
 

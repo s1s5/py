@@ -125,5 +125,26 @@ TEST(py_builtins_range, loop4) {
     ASSERT_EQ(i, 10);
 }
 
+TEST(py_builtins_range, implicit_conversion_to_vector) {
+    std::vector<int> l = py::range(10);
+    ASSERT_EQ(10, l.size());
+    for (int i = 0; i < 10; i++) {
+        ASSERT_EQ(i, l[i]);
+    }
+}
+
+int sum0(py::Iterator<int> iterator) {
+    int sum = 0;
+    for (auto &&i : iterator) {
+        sum += i;
+    }
+    return sum;
+}
+
+TEST(py_builtins_range, implicit_conversion_to_iterator) {
+    int s = sum0(py::range(10));
+    ASSERT_EQ(45, s);
+}
+
 }  // namespace
 
