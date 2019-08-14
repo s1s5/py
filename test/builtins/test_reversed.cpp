@@ -7,6 +7,7 @@
  */
 #include "../cpput.hpp"
 
+#include "py/builtins/base.hpp"
 #include "py/builtins/reversed.hpp"
 
 namespace {
@@ -34,6 +35,32 @@ TEST(py_builtins_reversed, overwrite) {
     ASSERT_EQ(data[1], 1);
     ASSERT_EQ(data[2], 0);
 }
+
+TEST(py_builtins_range, implicit_conversion_to_vector) {
+    std::vector<int> data{1, 3, 5};
+    std::vector<int> l = reversed(data);
+    ASSERT_EQ(3, l.size());
+    ASSERT_EQ(5, l[0]);
+    ASSERT_EQ(3, l[1]);
+    ASSERT_EQ(1, l[2]);
+}
+
+void check(py::Iterator<int> iterator) {
+    std::vector<int> l;
+    for (auto &&i : iterator) {
+        l.push_back(i);
+    }
+    ASSERT_EQ(3, l.size());
+    ASSERT_EQ(5, l[0]);
+    ASSERT_EQ(3, l[1]);
+    ASSERT_EQ(1, l[2]);
+}
+
+TEST(py_builtins_range, implicit_conversion_to_iterator) {
+    std::vector<int> data{1, 3, 5};
+    check(py::reversed(data));
+}
+
 
 }  // namespace
 

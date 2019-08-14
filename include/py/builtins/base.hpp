@@ -53,7 +53,8 @@ class Iterator {
                 return *(((X*)self->p)[0]);
             };
             eq = [](const IteratorType *self, const IteratorType *rhs) {
-                return ((X*)self->p)-> operator == (((const X*)(rhs->p))[0]);
+                // return ((X*)self->p)-> operator == (((const X*)(rhs->p))[0]);
+                return ((X*)self->p)[0] == (((const X*)(rhs->p))[0]);
             };
             copy = [](const IteratorType *self) {
                 return new X(((X*)self->p)[0]);
@@ -93,8 +94,11 @@ class Iterator {
     };
 
  public:
+    // template<typename X>
+    // Iterator(X &&x) : _begin(x.begin()), _end(x.end()) {
+    // }
     template<typename X>
-    Iterator(X &&x) : _begin(x.begin()), _end(x.end()) {
+    Iterator(X &&x) : _begin(std::begin(x)), _end(std::end(x)) {
     }
 
     auto begin() const { return _begin; }

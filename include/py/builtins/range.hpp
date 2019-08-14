@@ -8,6 +8,7 @@
 #ifndef RANGE_HPP_
 #define RANGE_HPP_
 
+#include <vector>
 #include <iterator>
 
 namespace py {
