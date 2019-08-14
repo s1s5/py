@@ -129,13 +129,29 @@ class TextResultWriter : public ResultWriter {
         if (s != "") { std::cout << s << std::flush; }
     }
 
-    virtual void startTest(const std::string&, const std::string&) { testCount_++; }
+    virtual void startTest(const std::string&c, const std::string&n) {
+        testCount_++;
+        class_name = c;
+        func_name = n;
+
+        std::cout << class_name << "::" << func_name << " .... ";
+        std::cout << std::flush;
+    }
 
     virtual void endTest(bool success) {
-        if (success)
+#if 0
+        if (success) {
             std::cout << '.';
-        else
+        } else {
             std::cout << 'F';
+        }
+#else
+        if (success) {
+            std::cout << "ok" << std::endl;
+        } else {
+            std::cout << "ng" << std::endl;
+        }
+#endif
         std::cout << std::flush;
     }
 
@@ -152,6 +168,7 @@ class TextResultWriter : public ResultWriter {
     int testCount_;
     int failures_;
     std::stringstream ss;
+    std::string class_name, func_name;
 };
 
 // ----------------------------------------------------------------------------
@@ -289,6 +306,19 @@ class Test {
     Test(const char* className, const char* name);
     virtual ~Test() {}
 
+    bool startsWith(const std::string &prefix) {
+        std::string test_string = test_unit_class_name_ + "::" + test_unit_name_;
+        for (int i = 0; i < prefix.size(); i++) {
+            if (i >= test_string.size()) {
+                return false;
+            }
+            if (prefix[i] != test_string[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     void run(ResultWriter& out) {
         testResult_.start(test_unit_class_name_, test_unit_name_, out);
         try {
@@ -352,10 +382,14 @@ inline Test::Test(const char* className, const char* name)
 
 // ----------------------------------------------------------------------------
 
-inline int runAllTests(ResultWriter& writer) {
+inline int runAllTests(ResultWriter& writer, const std::string &prefix) {
     Test* c = Repository::instance().getTests();
     while (c) {
+        if (prefix != "" and (not c->startsWith(prefix))) {
+            // pass
+        } else {
         c->run(writer);
+        }
         c = c->next();
     }
     return writer.getNumberOfFailures();
@@ -367,10 +401,14 @@ inline int runAllTests(ResultWriter& writer) {
 #define CPPUT_TEST_MAIN                                 \
     if (argc == 2 && std::string(argv[1]) == "--xml") { \
         ::cpput::XmlResultWriter writer;                \
-        return ::cpput::runAllTests(writer);            \
+        return ::cpput::runAllTests(writer, "");           \
     }                                                   \
     ::cpput::TextResultWriter writer;                   \
-    ::cpput::runAllTests(writer);                       \
+    std::string prefix = "";\
+    if (argc >= 2) {\
+    prefix = argv[1];\
+    }\
+    return ::cpput::runAllTests(writer, prefix);              \
 
 
 // ----------------------------------------------------------------------------
