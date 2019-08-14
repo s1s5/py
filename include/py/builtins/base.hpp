@@ -10,6 +10,10 @@
 
 #include <iterator>
 #include <utility>
+#include <vector>
+#include <iterator>
+#include <memory>
+#include <functional>
 
 namespace py {
 
@@ -31,17 +35,74 @@ class has_operator_size {
 }  // internal
 
 // not recommended in c++17
-template <class IteratorType>
-class Iterable : public std::iterator<std::input_iterator_tag,
-                                      decltype(*std::declval<IteratorType>())> {
+template <class ElementType>
+class Iterator {
  public:
-    Iterable(IteratorType begin_, IteratorType end_) : _begin(begin_), _end(end_) {}
-    IteratorType begin() const { return _begin; }
-    IteratorType end() const { return _end; }
+    class IteratorType {
+     public:
+        template<typename X>
+        IteratorType(const X &iter) {
+            p = new X(iter);
+            _delete = [](IteratorType *self) {
+                delete (X*)self->p;
+            };
+            pincrement = [](IteratorType *self) {
+                ((X*)self->p)-> operator ++();
+            };
+            aster = [](IteratorType *self) {
+                return *(((X*)self->p)[0]);
+            };
+            eq = [](const IteratorType *self, const IteratorType *rhs) {
+                return ((X*)self->p)-> operator == (((const X*)(rhs->p))[0]);
+            };
+            copy = [](const IteratorType *self) {
+                return new X(((X*)self->p)[0]);
+            };
+        }
+        ~IteratorType() {
+            if (p) {
+                _delete(this);
+            }
+            p = nullptr;
+        }
 
- private:
+        IteratorType &operator++() {
+            pincrement(this);
+            return *this;
+        }
+        auto operator*() { return aster(this); }
+        bool operator==(const IteratorType &rhs) const { return eq(this, &rhs); }
+        bool operator!=(const IteratorType &rhs) const { return not eq(this, &rhs); }
+
+        IteratorType (const IteratorType &rhs) {
+            p = rhs.copy(&rhs);
+            pincrement = rhs.pincrement;
+            _delete = rhs._delete;
+            aster = rhs.aster;
+            eq = rhs.eq;
+            copy = rhs.copy;
+        }
+
+        IteratorType & operator = (const IteratorType &) = delete;
+
+        void *p;
+        std::function<void(IteratorType*)> pincrement, _delete;
+        std::function<ElementType(IteratorType*)> aster;
+        std::function<bool(const IteratorType*, const IteratorType*)> eq;
+        std::function<void *(const IteratorType*)> copy;
+    };
+
+ public:
+    template<typename X>
+    Iterator(X &&x) : _begin(x.begin()), _end(x.end()) {
+    }
+
+    auto begin() const { return _begin; }
+    auto end() const { return _end; }
+    
     IteratorType _begin, _end;
 };
+
 
 template<class E, class V>
 bool in(const E &e, const V &v) {
