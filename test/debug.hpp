@@ -17,8 +17,8 @@ struct CustomIterator {
         return *this;
     }
     auto operator *()  const { return counter; }
-    bool operator == (const CustomIterator &rhs) { return counter == rhs.counter; }
-    bool operator != (const CustomIterator &rhs) { return counter != rhs.counter; }
+    bool operator == (const CustomIterator &rhs) const { return counter == rhs.counter; }
+    bool operator != (const CustomIterator &rhs) const { return counter != rhs.counter; }
     int counter{0};
 };
 
@@ -58,6 +58,9 @@ class Class {
 
     auto begin() { return CustomIterator(0); }
     auto end() { return CustomIterator(10); }
+
+    auto begin() const { return CustomIterator(0); }
+    auto end() const { return CustomIterator(5); }
 
     int my_id;
 };
