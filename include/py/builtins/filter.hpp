@@ -39,7 +39,7 @@ class ifilter_iterator
         return *this;
     }
     element_type &operator*() const { return *_iter; }
-    element_type *operator->() const { return &(*_iter); }
+    // element_type *operator->() const { return &(*_iter); }
     bool operator==(const ifilter_iterator &rhs) const { return _iter == rhs._iter; }
     bool operator!=(const ifilter_iterator &rhs) const { return _iter != rhs._iter; }
 

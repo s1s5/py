@@ -101,6 +101,10 @@ class Iterator {
     Iterator(X &&x) : _begin(std::begin(x)), _end(std::end(x)) {
     }
 
+    template<typename X>
+    Iterator(X &&b, X &&e) : _begin(b), _end(e) {
+    }
+
     auto begin() const { return _begin; }
     auto end() const { return _end; }
 
