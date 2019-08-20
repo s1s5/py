@@ -14,9 +14,7 @@ namespace py {
 
 // TODO: not recommended in c++17
 template <class TFunc, class Tarray>
-auto reduce(TFunc func, const Tarray &ar) ->
-    typename std::result_of<TFunc(decltype(*(begin(std::declval<Tarray>()))),
-                                  decltype(*(begin(std::declval<Tarray>()))))>::type {
+auto reduce(TFunc func, const Tarray &ar) {
     auto p0 = begin(ar);
     if (p0 == end(ar)) {
         return typename std::remove_const<
@@ -28,22 +26,6 @@ auto reduce(TFunc func, const Tarray &ar) ->
     while (p0 != end(ar)) {
         dst = func(dst, *p0);
         ++p0;
-    }
-    return dst;
-}
-
-template <class TFunc, class TIterator>
-auto reduce(TFunc func, TIterator iter, TIterator iter_end) ->
-    typename std::result_of<TFunc(decltype(*(std::declval<TIterator>())),
-                                  decltype(*(std::declval<TIterator>())))>::type {
-    if (iter == iter_end) {
-        return decltype(*(std::declval<TIterator>()))();
-    }
-    typename std::result_of<TFunc(decltype(*(std::declval<TIterator>())), decltype(*(std::declval<TIterator>())))>::type
-        dst = *iter;
-    ++iter;
-    for (; iter != iter_end; ++iter) {
-        dst = func(dst, *iter);
     }
     return dst;
 }
@@ -64,6 +46,23 @@ TFirst reduce(TFunc func, const Tarray &ar, const TFirst &first) {
     return dst;
 }
 
+#if 0
+template <class TFunc, class TIterator>
+auto reduce(TFunc func, TIterator iter, TIterator iter_end) ->
+    typename std::result_of<TFunc(decltype(*(std::declval<TIterator>())),
+                                  decltype(*(std::declval<TIterator>())))>::type {
+    if (iter == iter_end) {
+        return decltype(*(std::declval<TIterator>()))();
+    }
+    typename std::result_of<TFunc(decltype(*(std::declval<TIterator>())), decltype(*(std::declval<TIterator>())))>::type
+        dst = *iter;
+    ++iter;
+    for (; iter != iter_end; ++iter) {
+        dst = func(dst, *iter);
+    }
+    return dst;
+}
+
 template <class TFunc, class TIterator, class TFirst>
 TFirst reduce(TFunc func, TIterator iter, TIterator iter_end, const TFirst &first) {
     if (iter == iter_end) {
@@ -76,6 +75,7 @@ TFirst reduce(TFunc func, TIterator iter, TIterator iter_end, const TFirst &firs
     }
     return dst;
 }
+#endif
 
 }  // namespace py
 

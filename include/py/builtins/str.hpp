@@ -184,15 +184,17 @@ inline std::string upper(const std::string &s) {
 
 namespace string {
 
-extern const std::string ascii_letters;
-extern const std::string ascii_lowercase;
-extern const std::string ascii_uppercase;
-extern const std::string digits;
-extern const std::string hexdigits;
-extern const std::string octdigits;
-extern const std::string printable;
-extern const std::string punctuation;
-extern const std::string whitespace;
+#if __cplusplus >= 201703L
+static inline const std::string ascii_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static inline const std::string ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+static inline const std::string ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static inline const std::string digits = "0123456789";
+static inline const std::string hexdigits = "0123456789abcdefABCDEF";
+static inline const std::string octdigits = "01234567";
+static inline const std::string printable = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ \t\n\r\x0b\x0c";
+static inline const std::string punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+static inline const std::string whitespace = " \t\n\r\x0b\x0c";
+#endif
 
 template<class X>
 std::string join(const std::string &joiner, const X &v) {

@@ -33,7 +33,7 @@ auto list(Tarray &&iterable) {
 }
 
 template <class Iterator>
-std::vector<typename std::remove_reference<typename std::remove_cv<decltype(*(std::declval<Iterator>()))>::type>::type> list(Iterator begin, Iterator end) {
+auto list(Iterator begin, Iterator end) {
     return std::vector<typename std::remove_reference<typename std::remove_cv<decltype(*(std::declval<Iterator>()))>::type>::type>(begin, end);
 }
 
