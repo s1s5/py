@@ -28,3 +28,37 @@ TEST(py_builtins_combined, sorted_keys) {
         counter++;
     }
 }
+
+TEST(py_builtins_combined, zip_map) {
+    std::vector<int> v0{1, 2, 3, 4};
+    // std::vector<int> v0{1,};
+    // for (auto &&i : py::map([](int x) { return x + 10; }, v0)) {
+    //     std::cout << i << std::endl;
+    // }
+    // {
+    //     int x = 8;
+    //     auto t = std::forward_as_tuple(x, x + 8);
+    //     std::cout << std::get<0>(t) << " : " << std::get<1>(t) << std::endl;
+    // }
+    // {
+    //     auto z = py::zip(v0, py::map([](int x) { return x + 10; }, v0));
+    //     auto iter = z.begin();
+    //     auto &&[i0, i1] = *iter;
+    //     std::cout << "z : " << i0 << ", " << i1 << std::endl;    
+    // }
+    std::cout << "ptr : " << (uint64_t)&v0[0] << std::endl;
+    // for (auto &&[i0, i1] : py::zip(v0, py::map([](int x) { return x + 10; }, v0))) {
+    for (auto &&[i0, i1] : py::zip(v0, py::map([](int x) { return x + 10; }, v0))) {
+        std::cout << "result : " << i0 << ", " << i1 << std::endl;
+        std::cout << "i0 ptr = " << (uint64_t)&i0 << std::endl;
+        i0 += 100;
+    }
+    std::cout << "CHECK ref " << v0[0] << std::endl;
+    for (auto &&[i0, i1] : py::zip(py::map([](int x) { return x + 5; }, v0), v0)) {
+        std::cout << "result : " << i0 << ", " << i1 << std::endl;
+        std::cout << "i1 ptr = " << (uint64_t)&i1 << std::endl;
+    }
+    for (auto &&[i0, i1] : py::zip(py::map([](int x) { return x + 5; }, v0), py::map([](int x) { return x + 10; }, v0))) {
+        std::cout << "result : " << i0 << ", " << i1 << std::endl;
+    }
+}

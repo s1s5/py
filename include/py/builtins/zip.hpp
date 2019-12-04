@@ -35,8 +35,8 @@ class izip_iterator {
 
 template <class TupleType>
 class izip {
-    using IterType = decltype(internal::tuple_begin(std::declval<TupleType&>()));
-    using ElementType = decltype(internal::tuple_deref(std::declval<IterType&>()));
+    // using IterType = decltype(internal::tuple_begin(std::declval<TupleType&>()));
+    // using ElementType = decltype(internal::tuple_deref(std::declval<IterType&>()));
     // TODO: deref tuple
     // using RRElementType = typename std::remove_reference<ElementType>::type;
 

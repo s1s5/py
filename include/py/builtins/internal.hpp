@@ -12,6 +12,17 @@
 
 namespace py::internal {
 
+template<typename X0, typename X1>
+void show(X0 && x0, X1 && x1) {
+    std::cout << "x0:" << x0 << ", x1:" << x1 << std::endl;
+    std::cout << "rvalue X0:" << std::is_rvalue_reference<X0>::value << ", X1:" << std::is_rvalue_reference<X1>::value << std::endl;
+    std::cout << "lvalue X0:" << std::is_lvalue_reference<X0>::value << ", X1:" << std::is_lvalue_reference<X1>::value << std::endl;
+    std::cout << "reference X0:" << std::is_reference<X0>::value << ", X1:" << std::is_reference<X1>::value << std::endl;
+    std::cout << "rvalue x0:" << std::is_rvalue_reference<decltype(x0)>::value << ", x1:" << std::is_rvalue_reference<decltype(x1)>::value << std::endl;
+    std::cout << "lvalue x0:" << std::is_lvalue_reference<decltype(x0)>::value << ", x1:" << std::is_lvalue_reference<decltype(x1)>::value << std::endl;
+    std::cout << "reference x0:" << std::is_reference<decltype(x0)>::value << ", x1:" << std::is_reference<decltype(x1)>::value << std::endl;
+}
+
 template <int N>
 struct TupleUtil {
     template <typename F, typename Tuple, typename... Args>
@@ -19,8 +30,31 @@ struct TupleUtil {
         return TupleUtil<N - 1>::apply_iterators(f, t, std::get<N - 1>(t), args...);
     }
     template <typename Tuple, typename... Args>
-    static auto deref(Tuple& t, Args&... args) {
-        return TupleUtil<N - 1>::deref(t, std::get<N - 1>(t), args...);
+    static auto deref(Tuple& t, Args&&... args) {
+        // using T = decltype(*std::get<N - 1>(t));
+        // if constexpr (std::is_rvalue_reference<T>::value) {
+        //     std::cout << "rvalue deref: " << *std::get<N - 1>(t) << ", " << typeid(*std::get<N - 1>(t)).name() << std::endl;
+        // } else if constexpr (not std::is_lvalue_reference<T>::value) {
+        //     std::cout << "not lvalue deref: " << *std::get<N - 1>(t) << ", " << typeid(*std::get<N - 1>(t)).name() << std::endl;
+        // }
+        // int r = *std::get<N - 1>(t);
+        return TupleUtil<N - 1>::deref(t, *std::get<N - 1>(t), std::forward<Args>(args)...);
+#if 0
+        auto tt = TupleUtil<N - 1>::deref(t, *std::get<N - 1>(t), std::forward<Args>(args)...);
+        // std::cout << "@r = " << r << ", " << std::is_reference<T>::value << std::endl;
+        std::cout << "@r created >>" << typeid(tt).name() << std::endl;
+        // show(std::forward<int>(std::get<0>(tt)), std::forward<int>(std::get<1>(tt)));
+        return tt;
+#endif
+#if 0
+        // return TupleUtil<N - 1>::deref(t, std::forward(*std::get<N - 1>(t)), args...);
+        using T = decltype(*std::get<N - 1>(t));
+        if constexpr (not std::is_lvalue_reference<T>::value) {
+            return TupleUtil<N - 1>::deref(t, std::forward<typename std::remove_reference<T>::type>(*std::get<N - 1>(t)), std::forward<Args>(args)...);
+        }
+        return TupleUtil<N - 1>::deref(t, *std::get<N - 1>(t), std::forward<Args>(args)...);
+        // return TupleUtil<N - 1>::deref(t, std::get<N - 1>(t), args...);
+#endif
     }
     template <typename Tuple, typename... Args>
     static auto begin(Tuple& t, Args&... args) {
@@ -53,6 +87,22 @@ struct TupleUtil {
     // }
 };
 
+// template<typename X>
+// auto custom_ref(X && a) {
+//     // if constexpr (std::is_lvalue_reference<decltype(a)>::value) {
+//     //     return std::ref<X>(a);
+//     // } else 
+//         if constexpr (std::is_rvalue_reference<decltype(a)>::value) {
+//         return X(a);
+//     }
+//     return a;
+// }
+
+template<typename... Ts>
+auto make_subpack_tuple(Ts&&... xs) {
+    return std::tuple<Ts...>(std::forward<Ts>(xs)...);
+}
+
 template <>
 struct TupleUtil<0> {
     template <typename F, typename Tuple, typename... Args>
@@ -61,8 +111,32 @@ struct TupleUtil<0> {
     }
 
     template <typename Tuple, typename... Args>
-    static auto deref(Tuple& t, Args&... args) {
-        return std::tie(*args...);  // create reference
+    static auto deref(Tuple& t, Args&&... args) {
+        // return std::tie(*args...);  // create reference
+        // std::cout << " - forward_as_tuple" << std::endl;
+        // show(std::forward<Args>(args)...);
+        // return std::forward_as_tuple(std::forward<Args>(args)...);  // create reference
+        // auto &&tt = std::forward_as_tuple(std::forward<Args>(args)...);
+        return make_subpack_tuple(std::forward<Args>(args)...);
+        // return make_subpack_tuple(args...);
+#if 0
+        auto tt = make_subpack_tuple(std::forward<Args>(args)...);
+        // std::cout << std::get<0>(tt) << " x " << std::get<1>(tt) << std::endl;
+        // std::cout << typeid(std::tuple<int, int>).name() << std::endl;
+        // std::cout << typeid(std::tuple<int&, int>).name() << std::endl;
+        // std::cout << typeid(std::tuple<int&&, int>).name() << std::endl;
+        // std::cout << ">>" << typeid(std::tuple<int&, int&>).name() << std::endl;
+        // std::cout << typeid(std::tuple<int, int&&>).name() << std::endl;
+        // std::cout << "created >>" << typeid(tt).name() << std::endl;
+        // show(std::get<0>(tt), std::get<1>(tt));
+        // std::cout << "--------------------------------------------------------------------------------" << std::endl;
+        // show(std::forward<int>(std::get<0>(tt)), std::forward<int>(std::get<1>(tt)));
+        // return std::forward_as_tuple(args...);  // create reference
+        return tt;
+#endif
+        // return std::make_tuple(custom_ref<Args>(std::forward<Args>(args))...);
+        // return make_subpack_tuple(std::forward<Args>(args)...);
+        // return make_subpack_tuple(args...);
     }
 
     template <typename Tuple, typename... Args>
@@ -98,6 +172,11 @@ auto tuple_apply_iterators(F &f, Tuple& t) {
 template <typename Tuple>
 auto tuple_deref(Tuple& t) {
     return TupleUtil<std::tuple_size<Tuple>::value>::deref(t);
+#if 0
+    auto tt = TupleUtil<std::tuple_size<Tuple>::value>::deref(t);
+    // show(std::forward<int>(std::get<0>(tt)), std::forward<int>(std::get<1>(tt)));
+    return tt;
+#endif
 }
 
 template <typename Tuple>
