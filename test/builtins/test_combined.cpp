@@ -30,35 +30,70 @@ TEST(py_builtins_combined, sorted_keys) {
 }
 
 TEST(py_builtins_combined, zip_map) {
-    std::vector<int> v0{1, 2, 3, 4};
-    // std::vector<int> v0{1,};
-    // for (auto &&i : py::map([](int x) { return x + 10; }, v0)) {
-    //     std::cout << i << std::endl;
-    // }
-    // {
-    //     int x = 8;
-    //     auto t = std::forward_as_tuple(x, x + 8);
-    //     std::cout << std::get<0>(t) << " : " << std::get<1>(t) << std::endl;
-    // }
-    // {
-    //     auto z = py::zip(v0, py::map([](int x) { return x + 10; }, v0));
-    //     auto iter = z.begin();
-    //     auto &&[i0, i1] = *iter;
-    //     std::cout << "z : " << i0 << ", " << i1 << std::endl;    
-    // }
-    std::cout << "ptr : " << (uint64_t)&v0[0] << std::endl;
-    // for (auto &&[i0, i1] : py::zip(v0, py::map([](int x) { return x + 10; }, v0))) {
-    for (auto &&[i0, i1] : py::zip(v0, py::map([](int x) { return x + 10; }, v0))) {
-        std::cout << "result : " << i0 << ", " << i1 << std::endl;
-        std::cout << "i0 ptr = " << (uint64_t)&i0 << std::endl;
-        i0 += 100;
+    {
+        std::vector<int> v{0, 1, 2, 3};
+        std::vector<uintptr_t> p{(uintptr_t)&v[0], (uintptr_t)&v[1], (uintptr_t)&v[2], (uintptr_t)&v[3]};
+        int loop_counter = 0;
+        for (auto &&[i0, i1] : py::zip(v, py::map([](int x) { return x + 10; }, v))) {
+            ASSERT_EQ(loop_counter, i0);
+            ASSERT_EQ(loop_counter + 10, i1);
+            ASSERT_EQ(p[loop_counter], (uintptr_t)&i0);
+
+            i0 += 100;
+            i1 += 50;
+
+            ASSERT_EQ(loop_counter + 100, i0);
+            ASSERT_EQ(loop_counter + 10 + 50, i1);
+
+            loop_counter += 1;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            ASSERT_EQ(100 + i, v[i]);
+        }
     }
-    std::cout << "CHECK ref " << v0[0] << std::endl;
-    for (auto &&[i0, i1] : py::zip(py::map([](int x) { return x + 5; }, v0), v0)) {
-        std::cout << "result : " << i0 << ", " << i1 << std::endl;
-        std::cout << "i1 ptr = " << (uint64_t)&i1 << std::endl;
+
+    {
+        std::vector<int> v{0, 1, 2, 3};
+        std::vector<uintptr_t> p{(uintptr_t)&v[0], (uintptr_t)&v[1], (uintptr_t)&v[2], (uintptr_t)&v[3]};
+        int loop_counter = 0;
+        for (auto &&[i0, i1] : py::zip(py::map([](int x) { return x + 5; }, v), v)) {
+            ASSERT_EQ(loop_counter + 5, i0);
+            ASSERT_EQ(loop_counter, i1);
+            ASSERT_EQ(p[loop_counter], (uintptr_t)&i1);
+
+            i0 += 100;
+            i1 += 50;
+
+            ASSERT_EQ(loop_counter + 5 + 100, i0);
+            ASSERT_EQ(loop_counter + 50, i1);
+
+            loop_counter += 1;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            ASSERT_EQ(50 + i, v[i]);
+        }
     }
-    for (auto &&[i0, i1] : py::zip(py::map([](int x) { return x + 5; }, v0), py::map([](int x) { return x + 10; }, v0))) {
-        std::cout << "result : " << i0 << ", " << i1 << std::endl;
+
+    {
+        std::vector<int> v{0, 1, 2, 3};
+        int loop_counter = 0;
+        for (auto &&[i0, i1] : py::zip(py::map([](int x) { return x + 5; }, v), py::map([](int x) { return x + 10; }, v))) {
+            ASSERT_EQ(loop_counter + 5, i0);
+            ASSERT_EQ(loop_counter + 10, i1);
+
+            i0 += 100;
+            i1 += 50;
+
+            ASSERT_EQ(loop_counter + 5 + 100, i0);
+            ASSERT_EQ(loop_counter + 10 + 50, i1);
+
+            loop_counter += 1;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            ASSERT_EQ(i, v[i]);
+        }
     }
 }
