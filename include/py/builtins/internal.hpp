@@ -43,11 +43,6 @@ struct TupleUtil {
     }
 };
 
-template<typename... Ts>
-auto make_subpack_tuple(Ts&&... xs) {
-    return std::tuple<Ts...>(std::forward<Ts>(xs)...);
-}
-
 template <>
 struct TupleUtil<0> {
     template <typename F, typename Tuple, typename... Args>
@@ -57,7 +52,7 @@ struct TupleUtil<0> {
 
     template <typename Tuple, typename... Args>
     static auto deref(Tuple& t, Args&&... args) {
-        return make_subpack_tuple(std::forward<Args>(args)...);
+        return std::tuple<Args...>(std::forward<Args>(args)...);
     }
 
     template <typename Tuple, typename... Args>
