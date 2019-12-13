@@ -14,7 +14,19 @@
 namespace py {
 
 template <class TFunc, class TupleType>
+struct imap_iterator_tmp {
+    auto get() const { return internal::tuple_apply_iterators(func, iter); }
+    TFunc &func;
+    TupleType iter;
+};
+
+
+template <class TFunc, class TupleType>
 class imap_iterator {
+ public:
+    using value_type = decltype(std::declval<imap_iterator_tmp<TFunc, TupleType>>().get());
+    using reference = typename std::add_lvalue_reference<value_type>::type;
+
  public:
     imap_iterator(TFunc &func_, TupleType&& iter_) : func(func_), iter(iter_) {}
     imap_iterator &operator++() {
@@ -67,6 +79,8 @@ namespace std {
 template<class TFunc, class TupleType>
 struct iterator_traits<py::imap_iterator<TFunc, TupleType>> {
     using iterator_category = std::input_iterator_tag;
+    using value_type = typename py::imap_iterator<TFunc, TupleType>::value_type;
+    using reference = typename py::imap_iterator<TFunc, TupleType>::reference;
 };
 } // namespace std
 
